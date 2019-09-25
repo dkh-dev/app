@@ -23,7 +23,9 @@ class App {
             .use(errorHandler)
         this.middlewares = new Middlewares(this.app)
         this.router = new Router(this.app)
+        this.db = Db.initialize(this.config.database)
         this.authentication = new Authentication(this)
+        this.logger = logger
 
         this.settings = {
             routes: {},
@@ -62,7 +64,10 @@ class App {
 
     async initialize() {
         this.addLoggers()
-        await this.databaseConnect()
+
+        if (this.config.database) {
+            await this.db.connect()
+        }
     }
 
     addLoggers() {
@@ -70,12 +75,6 @@ class App {
 
         logger.add({ level: 'error', filename: error_log })
         logger.add({ level: 'info', filename: access_log })
-    }
-
-    async databaseConnect() {
-        if (this.config.database) {
-            this.db = await Db.connect(this.config.database)
-        }
     }
 
     finalize() {

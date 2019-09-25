@@ -1,0 +1,27 @@
+server:
+  port: 8080
+
+  # ssl_port: 4343
+  # ssl_certificate: test/self-signed.crt
+  # ssl_certificate_key: test/self-signed.key
+
+  access_log: data/access.log
+  error_log: data/error.log
+
+  post_max_size: 1024
+
+database:
+  hostname: localhost
+  port: 27017
+
+  name: test
+
+  user: user
+  password: 123456
+  authentication_database: test
+
+authentication:
+  secret: '123456'
+
+  key_length: 128
+  encoding: base64

@@ -1,0 +1,41 @@
+{
+  "name": "@dkh-dev/app",
+  "version": "1.0.0",
+  "description": "Simple server app",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {
+    "@dkh-dev/argv": "^2.0.0",
+    "@dkh-dev/crypto": "^2.0.0",
+    "@dkh-dev/extended-map": "^1.0.0",
+    "express": "^4.17.1",
+    "js-yaml": "^3.13.1",
+    "logform": "^2.1.2",
+    "mongodb": "^3.3.2",
+    "saslprep": "^1.0.3",
+    "winston": "^3.2.1"
+  },
+  "scripts": {
+    "test": "node test -c test/config.yaml",
+    "test-keygen": "node keygen -c test/config.yaml"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/dkh-dev/app.git"
+  },
+  "keywords": [
+    "app",
+    "server",
+    "express",
+    "mongo",
+    "mongodb"
+  ],
+  "author": "Hoang <dangkyokhoang@gmail.com> (https://dangkyokhoang.github.io/)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dkh-dev/app/issues"
+  },
+  "homepage": "https://github.com/dkh-dev/app#readme"
+}

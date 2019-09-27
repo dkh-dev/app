@@ -1,8 +1,11 @@
 {
   "name": "@dkh-dev/app",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Simple server app",
   "main": "index.js",
+  "bin": {
+    "keygen": "./bin/keygen.js"
+  },
   "directories": {
     "lib": "lib"
   },
@@ -12,14 +15,11 @@
     "@dkh-dev/extended-map": "^1.0.0",
     "express": "^4.17.1",
     "js-yaml": "^3.13.1",
-    "logform": "^2.1.2",
     "mongodb": "^3.3.2",
-    "saslprep": "^1.0.3",
-    "winston": "^3.2.1"
+    "saslprep": "^1.0.3"
   },
   "scripts": {
-    "test": "node test -c test/config.yaml",
-    "test-keygen": "node keygen -c test/config.yaml"
+    "test": "node test -c test/config.yaml"
   },
   "repository": {
     "type": "git",

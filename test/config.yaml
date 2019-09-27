@@ -5,10 +5,12 @@ server:
   # ssl_certificate: test/self-signed.crt
   # ssl_certificate_key: test/self-signed.key
 
-  access_log: data/access.log
+  info_log: data/info.log
   error_log: data/error.log
 
   post_max_size: 1024
+
+  keep_alive_timeout: 10000
 
 database:
   hostname: localhost
@@ -17,11 +19,11 @@ database:
   name: test
 
   user: user
-  password: 123456
+  password: abc123
   authentication_database: test
 
 authentication:
-  secret: '123456'
+  secret: secret
 
-  key_length: 128
+  key_size: 96
   encoding: base64

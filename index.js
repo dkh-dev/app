@@ -21,7 +21,7 @@ class App {
             routes: {},
         }
 
-        this.logger = new Logger(config.server)
+        this.logger = new Logger(config.logger)
         this.handler = new Handler(this.logger)
         this.db = new Db(config.database)
         this.authentication = new Authentication(this)

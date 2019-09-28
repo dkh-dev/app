@@ -5,12 +5,13 @@ server:
   # ssl_certificate: test/self-signed.crt
   # ssl_certificate_key: test/self-signed.key
 
-  info_log: data/info.log
-  error_log: data/error.log
-
   post_max_size: 1024
 
   keep_alive_timeout: 10000
+
+logger:
+  info: data/info.log
+  error: data/error.log
 
 database:
   hostname: localhost

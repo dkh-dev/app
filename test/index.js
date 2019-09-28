@@ -2,6 +2,8 @@
 
 const { Stream } = require('stream')
 
+const express = require('express')
+
 const App = require('..')
 const HttpError = require('../lib/http-error')
 
@@ -12,9 +14,8 @@ const mirror = ({ body }) => {
 
 const app = new App()
 
-app.disable('x-powered-by')
-
 app.use({
+    '/test': [ express.static('public') ],
     '/mirror': [ mirror ],
 })
 
@@ -23,7 +24,7 @@ app.secure([
 ])
 
 app.get({
-    '/': () => 'ok',
+    '/': () => ({ success: true }),
 
     '/error': () => {
         throw new HttpError(403, 'error')

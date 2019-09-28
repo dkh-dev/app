@@ -30,8 +30,6 @@ class App {
         this.servers = new Servers(this)
 
         this.express = express()
-            .use(express.json({ limit: config.server.post_max_size }))
-            .use(this.handler.error)
     }
 
     use(middlewares) {
@@ -74,20 +72,22 @@ class App {
         const { middlewares, routes: { get, post, secured } } = this.settings
 
         if (secured) {
-            const { authenticate } = this.authentication
-
             secured.forEach(route => {
-                if (!middlewares[ route ]) {
+                if (middlewares[ route ]) {
+                    middlewares[ route ].push(this.authentication.authenticate)
+                } else {
                     middlewares[ route ] = []
-                }
-
-                if (!middlewares[ route ].includes(authenticate)) {
-                    middlewares[ route ].push(authenticate)
                 }
             })
         }
 
+        this.express
+            .use(express.json({ limit: config.server.post_max_size }))
+            .disable('x-powered-by')
+
         this.middlewares.use(middlewares)
+
+        this.express.use(this.handler.error)
 
         if (get) {
             this.router.route('get', get)
@@ -96,8 +96,6 @@ class App {
         if (post) {
             this.router.route('post', post)
         }
-
-        return this
     }
 
     shutdown() {

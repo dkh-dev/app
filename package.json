@@ -1,6 +1,6 @@
 {
   "name": "@dkh-dev/app",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Simple server app",
   "main": "index.js",
   "bin": {
@@ -19,7 +19,7 @@
     "saslprep": "^1.0.3"
   },
   "scripts": {
-    "test": "node test -c test/config.yaml"
+    "test": "cd test && node index"
   },
   "repository": {
     "type": "git",

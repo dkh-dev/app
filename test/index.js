@@ -15,7 +15,7 @@ const mirror = ({ body }) => {
 const app = new App()
 
 app.use({
-    '/test': [ express.static('public') ],
+    '/': [ express.static('public') ],
     '/mirror': [ mirror ],
 })
 
@@ -25,6 +25,9 @@ app.secure([
 
 app.get({
     '/': () => ({ success: true }),
+
+    '/log': () => app.logger.info(1, 2),
+    '/log/objects': () => app.logger.info({ a: 1 }, { b: 2 }),
 
     '/error': () => {
         throw new HttpError(403, 'error')

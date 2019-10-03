@@ -76,7 +76,7 @@ class App {
                 if (middlewares[ route ]) {
                     middlewares[ route ].push(this.authentication.authenticate)
                 } else {
-                    middlewares[ route ] = []
+                    middlewares[ route ] = [ this.authentication.authenticate ]
                 }
             })
         }

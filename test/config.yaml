@@ -5,26 +5,28 @@ server:
   # ssl_certificate: test/self-signed.crt
   # ssl_certificate_key: test/self-signed.key
 
-  post_max_size: 1024
+  # post_max_size: 1000
 
-  keep_alive_timeout: 10000
+  # keep_alive_timeout: 10000
 
-logger:
-  info: data/info.log
-  error: data/error.log
+# logger:
+#   info: data/info.log
+#   error: data/error.log
 
 database:
-  hostname: localhost
-  port: 27017
+  # hostname: localhost
+  # port: 27017
 
   name: test
 
   user: user
   password: abc123
-  authentication_database: test
+  # authentication_database: test
 
-authentication:
+key:
+  # size: 96
+  # id_size: 32
+
   secret: secret
 
-  key_size: 96
-  encoding: base64
+  # encoding: base64

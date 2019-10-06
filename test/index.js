@@ -1,33 +1,41 @@
 'use strict'
 
+const { createReadStream } = require('fs')
 const { Stream } = require('stream')
-
-const express = require('express')
 
 const App = require('..')
 const HttpError = require('../lib/http-error')
 
 
-const mirror = ({ body }) => {
-    body.reversed = !body.reversed
-}
-
 const app = new App()
 
-app.use({
-    '/': [ express.static('public') ],
-    '/mirror': [ mirror ],
-})
+const { db, logger } = app
 
-app.secure([
+app.lock([
+    '/unlock-me',
     '/shutdown',
 ])
+
+app.use({
+    '/mirror': [
+        // reverses request body
+        ({ body }) => {
+            body.reversed = !body.reversed
+        },
+    ],
+})
 
 app.get({
     '/': () => ({ success: true }),
 
-    '/log': () => app.logger.info(1, 2),
-    '/log/objects': () => app.logger.info({ a: 1 }, { b: 2 }),
+    '/package.json': () => createReadStream('public/package.json'),
+
+    '/send-explicitly': (_, res) => {
+        res.send({ explicit: true })
+    },
+
+    '/log': () => logger.info(1, 2),
+    '/log/objects': () => logger.info({ a: 1 }, { b: 2 }),
 
     '/error': () => {
         throw new HttpError(403, 'error')
@@ -44,15 +52,17 @@ app.get({
 
         return stream
     },
+
+    '/unlock-me': () => ({ unlocked: true }),
 })
 
 app.post({
     '/mirror': ({ body }) => body,
 
-    '/database/write': () => {
-        app.db.timestamp.insertOne({ timestamp: Date.now() })
+    '/story/add': ({ body }) => {
+        db.story.insertOne({ ...body, createdAt: Date.now() })
     },
-    '/database/query': () => app.db.timestamp.find({}).toArray(),
+    '/story/query': () => db.story.find({}).toArray(),
 
     '/shutdown': () => app.shutdown(),
 })

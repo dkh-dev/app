@@ -2,22 +2,18 @@
 
 'use strict'
 
-const config = require('../lib/config')
-const Db = require('../lib/db')
-const Authentication = require('../lib/authentication')
+const App = require('..')
 
 
 const main = async () => {
-    const db = new Db(config.database)
-    const authentication = new Authentication({ db, config })
+    const { db, key } = new App()
 
     await db.connect()
+    await db.key.createIndex({ id: 1 }, { unique: true })
 
-    const key = await authentication.key()
+    console.log(await key.generate())
 
-    console.log(key)
-
-    db.close()
+    await db.close()
 }
 
 main()

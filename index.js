@@ -7,7 +7,7 @@ const Db = require('./lib/db')
 const Logger = require('./lib/logger')
 const Servers = require('./lib/servers')
 const Handler = require('./lib/handler')
-const Authentication = require('./lib/authentication')
+const Key = require('./lib/key')
 const Middlewares = require('./lib/middlewares')
 const Router = require('./lib/router')
 
@@ -24,7 +24,7 @@ class App {
         this.logger = new Logger(config.logger)
         this.handler = new Handler(this.logger)
         this.db = new Db(config.database)
-        this.authentication = new Authentication(this)
+        this.key = new Key(this)
         this.middlewares = new Middlewares(this)
         this.router = new Router(this)
         this.servers = new Servers(this)
@@ -38,8 +38,8 @@ class App {
         return this
     }
 
-    secure(routes) {
-        this.settings.routes.secured = routes
+    lock(routes) {
+        this.settings.routes.locked = routes
 
         return this
     }
@@ -69,33 +69,11 @@ class App {
     }
 
     finalize() {
-        const { middlewares, routes: { get, post, secured } } = this.settings
+        this.express.disable('x-powered-by')
 
-        if (secured) {
-            secured.forEach(route => {
-                if (middlewares[ route ]) {
-                    middlewares[ route ].push(this.authentication.authenticate)
-                } else {
-                    middlewares[ route ] = [ this.authentication.authenticate ]
-                }
-            })
-        }
-
-        this.express
-            .use(express.json({ limit: config.server.post_max_size }))
-            .disable('x-powered-by')
-
-        this.middlewares.use(middlewares)
-
-        this.express.use(this.handler.error)
-
-        if (get) {
-            this.router.route('get', get)
-        }
-
-        if (post) {
-            this.router.route('post', post)
-        }
+        this.key.activate()
+        this.middlewares.activate()
+        this.router.activate()
     }
 
     shutdown() {
@@ -105,17 +83,9 @@ class App {
     }
 
     async start() {
-        const { database, server } = config
-
-        if (!server) {
-            return
-        }
-
         this.finalize()
 
-        if (database) {
-            await this.db.connect()
-        }
+        await this.db.connect()
 
         this.servers.start()
     }

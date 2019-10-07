@@ -24,7 +24,7 @@ app.start()
 
 ### Configurations
 
-> Don't worry if these configurations are overwhelming to you. The default app is shipped with default configurations to make it work out of the box.
+> Don't worry if you find these configurations overwhelming. The default app is shipped with default configurations to make it work out of the box.
 
 `config.yaml`
 ```dart
@@ -62,6 +62,18 @@ key:
     size: <int> [96] // must be equal or greater than id size
     id_size: <int> [32]
     encoding: <String> [base64]
+
+session:
+    secret: <String>
+
+    resave: <bool> [false]
+    saveUninitialized: <bool> [false]
+
+    cookie:
+        path: <String> [/]
+        httpOnly: <bool> [true]
+        secure: <bool> [production ? true : false]
+        sameSite: <String> [strict]
 ```
 
 ### App
@@ -72,9 +84,8 @@ key:
         // Promise<void> connect() // connects to MongoDB
 
         Collection get <collection>() // returns MongoDB Collection
-        // db.session.createIndex()
-        // db.user.find()
-        // db.cart.updateOne()
+        // db.users.find()
+        // db.products.insertOne()
 
         // void close() // closes the database client
     }
@@ -84,12 +95,12 @@ key:
     ```typescript
     class Logger {
         void info() // logs to info log file in production environment
-               //   or to console in development environment
+                    //   or to console in development environment
 
         void error()
 
         void debug() // logs to console in development enviroment;
-                //   does nothing in production environment
+                     //   does nothing in production environment
 
         void <name>() // user-defined log stream
         // logger.request(`requesting ${ url }`)
@@ -97,10 +108,10 @@ key:
     }
     ```
 
-- `app.lock()` — locks routes; requires `authorization: <key>` to unlock
+- `app.lock()` — locks paths; requires `authorization: <key>` to unlock
     ```javascript
     // this works only if config.key is set
-    // otherwise, locked routes are always open
+    // otherwise, locked paths are always open
     app.lock([
         '/unlock-me',
         '/unlock-me-too',
@@ -112,11 +123,21 @@ key:
     app.use({
         '/*': logThisRequest,
 
-        // middlewares are fail-safe, feel free to throw an error from inside
+        // middlewares are fail-safe
+        // feel free to throw an error from inside
         '/should-fail': () => {
             throw Error('user wants me to fail')
         },
     })
+    ```
+
+- `app.session()` — enables session for paths
+    ```javascript
+    app.session([
+        '/login',
+        '/home',
+        '/app',
+    ])
     ```
 
 - `app.get()` — registers `GET` handlers
@@ -137,7 +158,8 @@ key:
             res.send({ explicit: true })
         },
 
-        // handlers are fail-safe, feel free to throw an error from inside
+        // handlers are fail-safe
+        // feel free to throw an error from inside
         '/gimme-an-error': () => {
             throw Error('user has requested an error')
         },
@@ -161,11 +183,11 @@ key:
 
         // handlers are fail-safe
         '/gimme-an-error/specific-code': ({ body: { code } }) => {
-            throw new HttpError(code, `user has requested a ${ code } error`)
+            throw new HttpError(code, `${ code } error`)
         }
     })
     ```
 
 ### Commands
 
-- `npx keygen` — generates a key to unlock locked routes
+- `npx keygen` — generates a key to unlock locked paths

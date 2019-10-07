@@ -1,9 +1,9 @@
 server:
   port: 8080
 
-  # ssl_port: 4343
-  # ssl_certificate: test/self-signed.crt
-  # ssl_certificate_key: test/self-signed.key
+  ssl_port: 4343
+  ssl_certificate: self-signed.crt
+  ssl_certificate_key: self-signed.key
 
   # post_max_size: 1000
 
@@ -24,9 +24,26 @@ database:
   # authentication_database: test
 
 key:
+  secret: authentication-key-secret
+
   # size: 96
   # id_size: 32
 
-  secret: secret
-
   # encoding: base64
+
+session:
+  secret: session-cookie-secret
+
+  # resave: false
+  # saveUninitialized: false
+
+  # cookie:
+  #   path: '/'
+  #   httpOnly: true
+  #   secure: false
+  #   sameSite: 'strict'
+
+# project-specific configurations
+
+misc:
+  name: value

@@ -25,6 +25,10 @@ app.use({
     ],
 })
 
+app.session([
+    '/session',
+])
+
 app.get({
     '/': () => ({ success: true }),
 
@@ -54,15 +58,38 @@ app.get({
     },
 
     '/unlock-me': () => ({ unlocked: true }),
+
+    '/misc': () => app.config.misc,
+
+    '/no-session': ({ session }) => ({ session }),
+    '/session': ({ session }) => {
+        session.views = (session.views || 0) + 1
+
+        return { id: session.id, session }
+    },
+    '/session/reset': ({ session }) => {
+        session.views = 1
+
+        return { id: session.id, session }
+    },
+    '/session/destroy': req => new Promise((resolve, reject) => {
+        req.session.destroy(error => {
+            if (error) {
+                reject(error)
+            } else {
+                resolve({ success: true })
+            }
+        })
+    }),
 })
 
 app.post({
     '/mirror': ({ body }) => body,
 
-    '/story/add': ({ body }) => {
-        db.story.insertOne({ ...body, createdAt: Date.now() })
+    '/stories/add': ({ body }) => {
+        db.stories.insertOne({ ...body, createdAt: Date.now() })
     },
-    '/story/query': () => db.story.find({}).toArray(),
+    '/stories/query': () => db.stories.find({}).toArray(),
 
     '/shutdown': () => app.shutdown(),
 })

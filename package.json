@@ -1,6 +1,6 @@
 {
   "name": "@dkh-dev/app",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Simple server app",
   "main": "index.js",
   "bin": {

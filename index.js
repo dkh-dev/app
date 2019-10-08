@@ -25,6 +25,8 @@ class App {
         this.logger = new Logger(config.logger)
         this.db = new Db(config.database)
         this.key = new Key(this)
+
+        this.express = express().disable('x-powered-by')
     }
 
     use(middlewares) {
@@ -68,8 +70,6 @@ class App {
     }
 
     finalize() {
-        this.express = express().disable('x-powered-by')
-
         this.handler = new Handler(this.logger)
         this.session = new Session(this)
         this.middlewares = new Middlewares(this)

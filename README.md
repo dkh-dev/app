@@ -56,11 +56,11 @@ database:
     password: <String>
     authentication_database: <String> [.name]
 
-key:
-    secret: <String>
+    pool_size: <int> [5]
+    min_size: <int> [1]
 
-    size: <int> [96] // must be equal or greater than id size
-    id_size: <int> [32]
+key:
+    size: <int> [64] // must be equal or greater than id size
     encoding: <String> [base64]
 
 session:

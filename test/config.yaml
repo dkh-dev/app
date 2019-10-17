@@ -23,12 +23,10 @@ database:
   password: abc123
   # authentication_database: test
 
-key:
-  secret: authentication-key-secret
+  pool_size: 1
 
-  # size: 96
-  # id_size: 32
-
+# key:
+  # size: 64
   # encoding: base64
 
 session:

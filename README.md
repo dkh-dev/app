@@ -57,7 +57,7 @@ database:
     authentication_database: <String> [.name]
 
     pool_size: <int> [5]
-    min_size: <int> [1]
+    min_size: <int>
 
 key:
     size: <int> [64] // must be equal or greater than id size

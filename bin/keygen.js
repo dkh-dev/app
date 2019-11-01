@@ -2,17 +2,27 @@
 
 'use strict'
 
+const argv = require('@dkh-dev/argv')
+
 const App = require('..')
 
 
 const main = async () => {
     const { db, key } = new App()
 
-    await db.connect()
+    if ('no-save' in argv) {
+        const { string } = await key.generateOnly()
 
-    console.log(await key.generate())
+        console.log(string)
+    } else {
+        await db.connect()
 
-    await db.close()
+        const string = await key.generate()
+
+        console.log(string)
+
+        await db.close()
+    }
 }
 
 main()

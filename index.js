@@ -77,6 +77,7 @@ class App {
         this.servers = new Servers(this)
 
         this.key.activate()
+        this.session.activate()
         this.middlewares.activate()
     }
 
@@ -91,7 +92,6 @@ class App {
 
         await this.db.connect()
 
-        this.session.activate()
         this.router.activate()
 
         this.servers.start()

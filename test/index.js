@@ -17,12 +17,10 @@ app.lock([
 ])
 
 app.use({
-    '/mirror': [
-        // reverses request body
-        ({ body }) => {
-            body.reversed = !body.reversed
-        },
-    ],
+    // reverses request body
+    '/mirror': ({ body }) => {
+        body.reversed = !body.reversed
+    },
 })
 
 app.session([
@@ -56,6 +54,7 @@ app.get({
 
         return stream
     },
+    '/error/next': (_, __, next) => next(new Error('next')),
 
     '/unlock-me': () => ({ unlocked: true }),
 

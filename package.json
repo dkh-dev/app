@@ -1,6 +1,6 @@
 {
   "name": "@dkh-dev/app",
-  "version": "3.4.2",
+  "version": "3.4.3",
   "description": "Simple server app",
   "main": "index.js",
   "bin": {
@@ -10,16 +10,13 @@
     "lib/*",
     "bin/*"
   ],
-  "directories": {
-    "lib": "lib"
-  },
   "dependencies": {
     "@dkh-dev/argv": "^2.0.0",
     "@dkh-dev/crypto": "^2.0.0",
-    "@dkh-dev/extended-map": "^1.0.0",
+    "@dkh-dev/extended-map": "^1.1.1",
     "@dkh-dev/fixed-size": "^1.0.0",
     "express": "^4.17.1",
-    "express-session": "^1.16.2",
+    "express-session": "^1.17.0",
     "js-yaml": "^3.13.1",
     "mongodb": "^3.3.3",
     "saslprep": "^1.0.3"

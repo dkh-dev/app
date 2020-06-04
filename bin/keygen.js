@@ -7,22 +7,40 @@ const argv = require('@dkh-dev/argv')
 const App = require('..')
 
 
+/**
+ * Generate key only.
+ *
+ * The generated key will not be stored.
+ */
+const noSave = argv.n || argv[ 'no-save' ]
+/**
+ * Granted scope.
+ */
+const scope = argv.s || argv.scope || ''
+
+const scopes = scope.split(' ').filter(Boolean)
+
+
 const main = async () => {
-    const { db, key } = new App()
+  const { db, key } = new App()
 
-    if ('no-save' in argv) {
-        const { string } = await key.generateOnly()
+  if (noSave) {
+    const { string } = await key.generateOnly()
 
-        console.log(string)
-    } else {
-        await db.connect()
-
-        const string = await key.generate()
-
-        console.log(string)
-
-        await db.close()
+    console.log(string)
+  } else {
+    if (scopes.length === 0) {
+      throw Error('missing parameter -scope or -s')
     }
+
+    await db.connect()
+
+    const string = await key.generate(scopes)
+
+    console.log(string)
+
+    await db.close()
+  }
 }
 
 main()

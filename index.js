@@ -6,7 +6,7 @@ const config = require('./lib/config')
 const Db = require('./lib/db')
 const Logger = require('./lib/logger')
 const Servers = require('./lib/servers')
-const Handler = require('./lib/handler')
+const Handlers = require('./lib/handlers')
 const Key = require('./lib/key')
 const Session = require('./lib/session')
 const Middlewares = require('./lib/middlewares')
@@ -14,88 +14,96 @@ const Router = require('./lib/router')
 
 
 class App {
-    constructor() {
-        this.config = config
+  constructor() {
+    this.config = config
 
-        this.settings = {
-            middlewares: {},
-            routes: {},
-        }
-
-        this.logger = new Logger(config.logger)
-        this.db = new Db(config.database)
-        this.key = new Key(this)
-
-        this.express = express().disable('x-powered-by')
+    this.settings = {
+      middlewares: {},
+      routes: {},
     }
 
-    use(middlewares) {
-        this.settings.middlewares = middlewares
+    this.initialize()
+  }
 
-        return this
-    }
+  use(middlewares) {
+    this.settings.middlewares = middlewares
 
-    lock(paths) {
-        this.settings.routes.locked = paths
+    return this
+  }
 
-        return this
-    }
+  /**
+   * Locks paths. Requires authentication keys to unlock.
+   */
+  lock(paths) {
+    this.settings.routes.locked = paths
 
-    session(paths) {
-        this.settings.routes.session = paths
-    }
+    return this
+  }
 
-    get(routes) {
-        this.settings.routes.get = routes
+  /**
+   * Enables sessions for paths.
+   */
+  sessions(paths) {
+    this.settings.routes.session = paths
+  }
 
-        return this
-    }
+  get(routes) {
+    this.settings.routes.get = routes
 
-    post(routes) {
-        this.settings.routes.post = routes
+    return this
+  }
 
-        return this
-    }
+  post(routes) {
+    this.settings.routes.post = routes
 
-    set(name, value) {
-        this.express.set(name, value)
+    return this
+  }
 
-        return this
-    }
+  set(name, value) {
+    this.express.set(name, value)
 
-    disable(setting) {
-        this.express.disable(setting)
+    return this
+  }
 
-        return this
-    }
+  disable(setting) {
+    this.express.disable(setting)
 
-    finalize() {
-        this.handler = new Handler(this.logger)
-        this.session = new Session(this)
-        this.middlewares = new Middlewares(this)
-        this.router = new Router(this)
-        this.servers = new Servers(this)
+    return this
+  }
 
-        this.key.activate()
-        this.session.activate()
-        this.middlewares.activate()
-    }
+  initialize() {
+    this.logger = new Logger(config.logger)
+    this.db = new Db(config.database)
+    this.key = new Key(this)
 
-    shutdown() {
-        this.servers.shutdown()
-        this.db.close()
-        this.logger.close()
-    }
+    this.express = express().disable('x-powered-by')
+  }
 
-    async start() {
-        this.finalize()
+  finalize() {
+    this.handlers = new Handlers(this)
+    this.session = new Session(this)
+    this.middlewares = new Middlewares(this)
+    this.router = new Router(this)
+    this.servers = new Servers(this)
+  }
 
-        await this.db.connect()
+  async start() {
+    await this.db.connect()
 
-        this.router.activate()
+    this.finalize()
 
-        this.servers.start()
-    }
+    this.key.activate()
+    this.session.activate()
+    this.middlewares.activate()
+    this.router.activate()
+    this.servers.start()
+  }
+
+  shutdown() {
+    this.servers.shutdown()
+    this.db.close()
+    this.logger.close()
+  }
 }
 
 module.exports = App

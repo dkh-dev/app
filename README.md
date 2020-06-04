@@ -26,7 +26,7 @@ app.start()
 
 > Don't worry if you find these configurations overwhelming. The default app is shipped with default configurations to make it work out of the box.
 
-`config.yaml`
+`.config.yaml`
 ```dart
 server:
     port: <int> [8080]
@@ -67,13 +67,13 @@ session:
     secret: <String>
 
     resave: <bool> [false]
-    saveUninitialized: <bool> [false]
+    save_uninitialized: <bool> [false]
 
     cookie:
+        secure: <bool> [is_production ? true : false]
         path: <String> [/]
-        httpOnly: <bool> [true]
-        secure: <bool> [production ? true : false]
-        sameSite: <String> [strict]
+        http_only: <bool> [true]
+        same_site: <String> [strict]
 ```
 
 ### App
@@ -131,9 +131,9 @@ session:
     })
     ```
 
-- `app.session()` — enables session for paths
+- `app.sessions()` — enables sessions for paths
     ```javascript
-    app.session([
+    app.sessions([
         '/login',
         '/home',
         '/app',

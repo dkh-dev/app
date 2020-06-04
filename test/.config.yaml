@@ -33,13 +33,13 @@ session:
   secret: session-cookie-secret
 
   # resave: false
-  # saveUninitialized: false
+  # save_ninitialized: false
 
   # cookie:
   #   path: '/'
-  #   httpOnly: true
+  #   http_only: true
   #   secure: false
-  #   sameSite: 'strict'
+  #   same_site: 'strict'
 
 # project-specific configurations
 

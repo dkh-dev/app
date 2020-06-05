@@ -54,10 +54,12 @@ database:
 
     user: <String>
     password: <String>
-    authentication_database: <String> [.name]
+    authentication_database: <String> [database.name]
 
     pool_size: <int> [5]
     min_size: <int>
+
+    ignore_undefined: <bool> [true]
 
 key:
     size: <int> [64] // must be equal or greater than id size
@@ -191,3 +193,12 @@ session:
 ### Commands
 
 - `npx keygen` — generates a key to unlock locked paths
+
+## Changelog
+
+### 4.1.0
+
+Additions:
+
+- Configuration: `config.db.ignore_undefined = true`
+- Authentication key comment: `keygen` with argument `-m` or `--comment`

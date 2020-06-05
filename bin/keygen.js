@@ -17,30 +17,39 @@ const noSave = argv.n || argv[ 'no-save' ]
  * Granted scope.
  */
 const scope = argv.s || argv.scope || ''
+const comment = argv.m || argv.comment
 
-const scopes = scope.split(' ').filter(Boolean)
 
+const { db, key } = new App()
 
-const main = async () => {
-  const { db, key } = new App()
+const generateOnly = async () => {
+  const { string } = await key.generateOnly()
 
-  if (noSave) {
-    const { string } = await key.generateOnly()
-
-    console.log(string)
-  } else {
-    if (scopes.length === 0) {
-      throw Error('missing parameter -scope or -s')
-    }
-
-    await db.connect()
-
-    const string = await key.generate(scopes)
-
-    console.log(string)
-
-    await db.close()
-  }
+  console.log(string)
 }
 
-main()
+
+const generate = async () => {
+  const scopes = scope.split(' ').filter(Boolean)
+
+  if (scopes.length === 0) {
+    throw Error('missing parameter -scope or -s')
+  }
+
+  await db.connect()
+
+  const string = await key.generate({
+    scopes,
+    comment,
+  })
+
+  console.log(string)
+
+  await db.close()
+}
+
+if (noSave) {
+  generateOnly()
+} else {
+  generate()
+}

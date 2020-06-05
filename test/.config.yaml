@@ -23,7 +23,9 @@ database:
   password: abc123
   # authentication_database: test
 
-  pool_size: 1
+  # pool_size: 1
+
+  # ignore_undefined: true
 
 # key:
   # size: 64

@@ -30,7 +30,7 @@ const generateOnly = async () => {
 
 
 const generate = async () => {
-  const scopes = scope.split(' ').filter(Boolean)
+  const scopes = scope.split(/[\s,]/).map(scope => scope.trim()).filter(Boolean)
 
   if (scopes.length === 0) {
     throw Error('missing parameter -scope or -s')

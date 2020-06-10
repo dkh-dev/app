@@ -12,7 +12,7 @@ const app = new App()
 const { db, logger } = app
 
 app.lock([
-  // npx keygen -s '/unlock-me /also-unlock-me'
+  // npx keygen -s "/unlock-me /also-unlock-me"
   //   should unlock
   //     /unlock-me
   //     /unlock-me/*
@@ -45,7 +45,7 @@ app.get({
 
   '/package.json': () => createReadStream('metadata.json'),
 
-  '/send-explicitly': (_, res) => {
+  '/send-explicitly': (req, res) => {
     res.send({ explicit: true })
   },
 

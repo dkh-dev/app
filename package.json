@@ -1,6 +1,6 @@
 {
   "name": "@dkh-dev/app",
-  "version": "4.1.1",
+  "version": "4.2.0",
   "description": "Simple server app",
   "main": "index.js",
   "bin": {
@@ -12,11 +12,12 @@
   ],
   "scripts": {
     "test": "cd test && node index",
-    "test-production": "cd test && node index --production"
+    "test-production": "cd test && node index --production",
+    "test-keygen": "node bin/keygen -c test/.config.yaml -s /unlock-me,/also-unlock-me"
   },
   "dependencies": {
     "@dkh-dev/argv": "^2.0.0",
-    "@dkh-dev/crypto": "^2.0.0",
+    "@dkh-dev/crypto": "^3.2.1",
     "@dkh-dev/extended-map": "^1.2.0",
     "express": "^4.17.1",
     "js-yaml": "^3.14.0"

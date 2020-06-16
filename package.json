@@ -1,6 +1,6 @@
 {
   "name": "@dkh-dev/app",
-  "version": "4.2.1",
+  "version": "4.2.2",
   "description": "Simple server app",
   "main": "index.js",
   "bin": {
@@ -18,18 +18,18 @@
   "dependencies": {
     "@dkh-dev/argv": "^2.0.0",
     "@dkh-dev/crypto": "^3.2.2",
+    "@dkh-dev/eslint-config": "^1.5.2",
     "@dkh-dev/extended-map": "^1.2.0",
     "express": "^4.17.1",
     "js-yaml": "^3.14.0"
   },
   "peerDependencies": {
     "express-session": "^1.17.1",
-    "mongodb": "^3.5.8"
+    "mongodb": "^3.5.9"
   },
   "devDependencies": {
-    "@dkh-dev/eslint-config": "^1.5.0",
     "express-session": "^1.17.1",
-    "mongodb": "^3.5.8"
+    "mongodb": "^3.5.9"
   },
   "repository": {
     "type": "git",

@@ -36,15 +36,31 @@ app.use({
   },
 })
 
-app.sessions([
+app.static({
+  // /static/metadata.json returns ./metadata.json
+  '/static': '.',
+
+  // /static/lib returns ../index.js
+  // /static/lib/assets.js returns ../lib/assets.js
+  // /static/lib/now.js returns ../lib/utils/now.js
+  '/static/lib': [
+    {
+      root: '../',
+      index: 'index.js',
+    },
+    '../lib',
+    '../lib/utils',
+  ],
+})
+
+app.session([
   '/session',
 ])
 
 app.get({
   '/': () => ({ success: true }),
 
-  '/package.json': () => createReadStream('metadata.json'),
-
+  '/send-stream': () => createReadStream('metadata.json'),
   '/send-explicitly': (req, res) => {
     res.send({ explicit: true })
   },

@@ -8,9 +8,10 @@ const Logger = require('./lib/logger')
 const Servers = require('./lib/servers')
 const Handlers = require('./lib/handlers')
 const Key = require('./lib/key')
-const Session = require('./lib/session')
+const Sessions = require('./lib/sessions')
 const Middlewares = require('./lib/middlewares')
 const Router = require('./lib/router')
+const Assets = require('./lib/assets')
 
 
 class App {
@@ -20,6 +21,7 @@ class App {
     this.settings = {
       middlewares: {},
       routes: {},
+      assets: {},
     }
 
     this.initialize()
@@ -43,8 +45,15 @@ class App {
   /**
    * Enables sessions for paths.
    */
-  sessions(paths) {
+  session(paths) {
     this.settings.routes.session = paths
+  }
+
+  /**
+   * Serves assets.
+   */
+  static(options) {
+    this.settings.assets = options
   }
 
   get(routes) {
@@ -81,19 +90,20 @@ class App {
 
   finalize() {
     this.handlers = new Handlers(this)
-    this.session = new Session(this)
+    this.assets = new Assets(this)
+    this.sessions = new Sessions(this)
     this.middlewares = new Middlewares(this)
     this.router = new Router(this)
     this.servers = new Servers(this)
   }
 
   async start() {
-    await this.db.connect()
-
     this.finalize()
 
+    await this.db.connect()
     this.key.activate()
-    this.session.activate()
+    this.assets.activate()
+    this.sessions.activate()
     this.middlewares.activate()
     this.router.activate()
     this.servers.start()

@@ -37,7 +37,7 @@ server:
 
     post_max_size: <int> [1000]
 
-    keep_alive_timeout: <int> [5000]
+    keep_alive_timeout: <int> [0]
 
 logger:
     info: <String> [data/info.log] // info log file path
@@ -56,7 +56,7 @@ database:
     password: <String>
     authentication_database: <String> [database.name]
 
-    pool_size: <int> [5]
+    pool_size: <int> [1]
     min_size: <int>
 
     ignore_undefined: <bool> [true]
@@ -73,6 +73,7 @@ session:
 
     cookie:
         secure: <bool> [is_production ? true : false]
+        signed: true
         path: <String> [/]
         http_only: <bool> [true]
         same_site: <String> [strict]

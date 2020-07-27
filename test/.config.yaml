@@ -7,7 +7,7 @@ server:
 
   # post_max_size: 1000
 
-  # keep_alive_timeout: 10000
+  # keep_alive_timeout: 0
 
 # logger:
 #   info: data/info.log
@@ -35,12 +35,13 @@ session:
   secret: session-cookie-secret
 
   # resave: false
-  # save_ninitialized: false
+  # save_uninitialized: false
 
   # cookie:
+  #   secure: false
+  #   signed: true
   #   path: '/'
   #   http_only: true
-  #   secure: false
   #   same_site: 'strict'
 
 # project-specific configurations

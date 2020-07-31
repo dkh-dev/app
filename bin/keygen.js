@@ -12,7 +12,7 @@ const App = require('..')
  *
  * The generated key will not be stored.
  */
-const noSave = argv.n || argv[ 'no-save' ]
+const dryRun = argv.n || argv[ 'dry-run' ]
 /**
  * Granted scope.
  */
@@ -30,7 +30,7 @@ const generateOnly = async () => {
 
 
 const generate = async () => {
-  const scopes = scope.split(/[\s,]/).map(scope => scope.trim()).filter(Boolean)
+  const scopes = scope.split(/[\s,]/).filter(Boolean)
 
   if (scopes.length === 0) {
     throw Error('missing parameter -scope or -s')
@@ -48,7 +48,7 @@ const generate = async () => {
   await db.close()
 }
 
-if (noSave) {
+if (dryRun) {
   generateOnly()
 } else {
   generate()

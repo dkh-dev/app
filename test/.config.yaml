@@ -7,7 +7,7 @@ server:
 
   # post_max_size: 1000
 
-  # keep_alive_timeout: 0
+  # keep_alive_timeout: 5000
 
 # logger:
 #   info: data/info.log

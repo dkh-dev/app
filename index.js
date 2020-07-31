@@ -21,7 +21,6 @@ class App {
     this.settings = {
       middlewares: {},
       routes: {},
-      assets: {},
     }
 
     this.initialize()
@@ -47,13 +46,17 @@ class App {
    */
   session(paths) {
     this.settings.routes.session = paths
+
+    return this
   }
 
   /**
    * Serves assets.
    */
   static(options) {
-    this.settings.assets = options
+    this.settings.routes.assets = options
+
+    return this
   }
 
   get(routes) {
@@ -85,7 +88,9 @@ class App {
     this.db = new Db(config.database)
     this.key = new Key(this)
 
-    this.express = express().disable('x-powered-by')
+    this.express = express()
+
+    return this
   }
 
   finalize() {
@@ -95,6 +100,10 @@ class App {
     this.middlewares = new Middlewares(this)
     this.router = new Router(this)
     this.servers = new Servers(this)
+
+    this.express.disable('x-powered-by')
+
+    return this
   }
 
   async start() {
@@ -106,13 +115,17 @@ class App {
     this.sessions.activate()
     this.middlewares.activate()
     this.router.activate()
-    this.servers.start()
+    await this.servers.start()
+
+    return this
   }
 
   shutdown() {
     this.servers.shutdown()
     this.db.close()
     this.logger.close()
+
+    return this
   }
 }
 

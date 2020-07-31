@@ -1,10 +1,15 @@
 'use strict'
 
+process.chdir(__dirname)
+
 const { createReadStream } = require('fs')
 const { Stream } = require('stream')
 
+const argv = require('@dkh-dev/argv')
+
 const App = require('..')
 const HttpError = require('../lib/http-error')
+const stdio = require('./utils/stdio')
 
 
 const app = new App()
@@ -25,9 +30,6 @@ app.lock([
   '/also-unlock-me',
   '/unlock-me-to-be-wrong',
   '/never-unlock-me',
-
-  // npx keygen -s /shutdown
-  '/shutdown',
 ])
 
 app.use({
@@ -37,12 +39,15 @@ app.use({
 })
 
 app.static({
-  // /static/metadata.json returns ./metadata.json
-  '/static': '.',
+  // /static > ./index.js
+  '/static': {
+    root: './',
+    index: 'index.js',
+  },
 
-  // /static/lib returns ../index.js
-  // /static/lib/assets.js returns ../lib/assets.js
-  // /static/lib/now.js returns ../lib/utils/now.js
+  // /static/lib > ../index.js
+  // /static/lib/assets.js > ../lib/assets.js
+  // /static/lib/now.js > ../lib/utils/now.js
   '/static/lib': [
     {
       root: '../',
@@ -60,30 +65,58 @@ app.session([
 app.get({
   '/': () => ({ success: true }),
 
-  '/send-stream': () => createReadStream('metadata.json'),
+  '/send-stream': () => createReadStream('index.js'),
   '/send-explicitly': (req, res) => {
     res.send({ explicit: true })
   },
+  '/send-server-sent-events': (req, res, next) => {
+    res.set({
+      connection: 'keep-alive',
+      'access-control-allow-origin': '*',
+      'cache-control': 'no-cache',
+      'content-type': 'text/event-stream',
+      'transfer-encoding': 'identity',
+    })
 
-  '/log': () => logger.info(1, 2),
-  '/log/objects': () => logger.info({ a: 1 }, { b: 2 }),
+    for (let i = 0; i < 3; i++) {
+      setTimeout(
+        () => {
+          if (i === 2) {
+            // for the connection to be closed immediately
+            //   after the event stream ends,
+            // instead of calling next() to end the request
+            void next
+            // manually close the socket
+            res.socket.end()
+          }
+
+          res.write(`event: sse\n`)
+          res.write(`data: ${ i }\n\n`)
+        },
+        i * 100,
+      )
+    }
+  },
+
+  '/log': () => logger.info('log a string and number', 1),
+  '/log/objects': () => logger.info({ object: 1 }, [ 1 ]),
 
   '/error': () => {
-    throw new HttpError(403, 'error')
+    throw new Error('error')
   },
   '/error/async': async () => {
     await new Promise(resolve => setTimeout(resolve, 100))
 
-    throw new HttpError(404, 'error async')
+    throw new HttpError(403, 'async')
   },
   '/error/stream': () => {
     const stream = new Stream()
 
-    setTimeout(() => stream.emit('error', new Error('stream error')), 100)
+    setTimeout(() => stream.emit('error', new HttpError(404, 'stream')), 100)
 
     return stream
   },
-  '/error/next': (req, res, next) => next(new Error('next')),
+  '/error/next': (req, res, next) => next(new HttpError(405, 'next')),
 
   '/unlock-me': () => ({ unlocked: true }),
   '/unlock-me/also': () => ({ unlocked: true }),
@@ -93,16 +126,16 @@ app.get({
 
   '/misc': () => app.config.misc,
 
-  '/no-session': ({ session }) => ({ session }),
+  '/session-not-enabled': ({ session }) => ({
+    enabled: typeof session === 'object',
+  }),
   '/session': ({ session }) => {
-    session.views = (session.views || 0) + 1
+    session.count = (session.count || 0) + 1
 
-    return { id: session.id, session }
-  },
-  '/session/reset': ({ session }) => {
-    session.views = 1
-
-    return { id: session.id, session }
+    return {
+      enabled: typeof session === 'object',
+      count: session.count,
+    }
   },
   '/session/destroy': req => new Promise((resolve, reject) => {
     req.session.destroy(error => {
@@ -113,17 +146,41 @@ app.get({
       }
     })
   }),
+
+  '/stories/query': () => (
+    db.stories.find({}).sort({ createdAt: -1 }).toArray()
+  ),
+  '/stories/query/last': async () => {
+    const [ last ] = await db.stories
+      .find({}, { projection: { _id: 0, createdAt: 0 } })
+      .sort({ createdAt: -1 })
+      .toArray()
+
+    return last || null
+  },
+
+  '/stdio': () => stdio,
+
+  '/delete-keys-from-database': async () => {
+    await db.keys.deleteMany({})
+  },
+
+  '/shutdown': () => {
+    app.shutdown()
+  },
 })
 
 app.post({
   '/mirror': ({ body }) => body,
 
-  '/stories/add': ({ body }) => {
-    db.stories.insertOne({ ...body, createdAt: Date.now() })
+  '/stories/add': async ({ body }) => {
+    await db.stories.deleteMany({ createdAt: { $lt: Date.now() - 86400000 } })
+    await db.stories.insertOne({ ...body, createdAt: Date.now() })
   },
-  '/stories/query': () => db.stories.find({}).toArray(),
-
-  '/shutdown': () => app.shutdown(),
 })
 
-app.start()
+if (argv.auto) {
+  app.start().then(require('./test'))
+} else {
+  app.start()
+}

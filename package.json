@@ -1,6 +1,6 @@
 {
   "name": "@dkh-dev/app",
-  "version": "4.4.0",
+  "version": "4.5.0",
   "description": "Simple server app",
   "main": "index.js",
   "bin": {
@@ -11,14 +11,11 @@
     "bin/*"
   ],
   "scripts": {
-    "test": "cd test && node index",
-    "test-production": "cd test && node index --production",
-    "test-keygen": "node bin/keygen -c test/.config.yaml -s /unlock-me,/also-unlock-me"
+    "test": "node test --auto"
   },
   "dependencies": {
     "@dkh-dev/argv": "^2.0.0",
     "@dkh-dev/crypto": "^3.2.2",
-    "@dkh-dev/eslint-config": "^1.5.2",
     "@dkh-dev/extended-map": "^1.2.0",
     "express": "^4.17.1",
     "js-yaml": "^3.14.0"
@@ -28,8 +25,11 @@
     "mongodb": "^3.5.9"
   },
   "devDependencies": {
+    "@dkh-dev/eslint-config": "^1.6.0",
+    "axios": "^0.19.2",
     "express-session": "^1.17.1",
-    "mongodb": "^3.5.9"
+    "mongodb": "^3.5.9",
+    "tape": "^5.0.1"
   },
   "repository": {
     "type": "git",

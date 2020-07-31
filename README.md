@@ -24,9 +24,10 @@ app.start()
 
 ### Configurations
 
-> Don't worry if you find these configurations overwhelming. The default app is shipped with default configurations to make it work out of the box.
+> Note: The default app is shipped with default configurations to make it work out of the box.
 
 `.config.yaml`
+
 ```dart
 server:
     port: <int> [8080]
@@ -37,7 +38,7 @@ server:
 
     post_max_size: <int> [1000]
 
-    keep_alive_timeout: <int> [0]
+    keep_alive_timeout: <int> [5000]
 
 logger:
     info: <String> [data/info.log] // info log file path

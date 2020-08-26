@@ -9,7 +9,6 @@ const App = require('..')
 
 /**
  * Generate key only.
- *
  * The generated key will not be stored.
  */
 const dryRun = argv.n || argv[ 'dry-run' ]
@@ -27,7 +26,6 @@ const generateOnly = async () => {
 
   console.log(string)
 }
-
 
 const generate = async () => {
   const scopes = scope.split(/[\s,]/).filter(Boolean)

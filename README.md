@@ -38,7 +38,7 @@ server:
 
     post_max_size: <int> [1000]
 
-    keep_alive_timeout: <int> [5000]
+    keep_alive_timeout: <int> [5000] // a value of 0 will disable keep-alive
 
 logger:
     info: <String> [data/info.log] // info log file path

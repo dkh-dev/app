@@ -19,7 +19,7 @@ class App {
     this.config = config
 
     this.settings = {
-      middlewares: {},
+      middlewares: [],
       routes: {},
     }
 
@@ -27,7 +27,9 @@ class App {
   }
 
   use(middlewares) {
-    this.settings.middlewares = middlewares
+    const entries = Object.entries(middlewares)
+
+    this.settings.middlewares.push(...entries)
 
     return this
   }

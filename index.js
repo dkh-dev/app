@@ -24,6 +24,8 @@ class App {
       routes: {},
     }
 
+    this.validate = this.validate.bind(this)
+
     this.initialize()
   }
 

@@ -14,7 +14,7 @@ const stdio = require('./utils/stdio')
 
 const app = new App()
 
-const { db, logger } = app
+const { db, logger, validate } = app
 
 app.lock([
   // npx keygen -s "/unlock-me /also-unlock-me"
@@ -225,9 +225,9 @@ app.post({
 
   '/validator/pet': ({ body: pet }) => {
     // validating using a predefined schema
-    app.validate('pet', pet)
+    validate('pet', pet)
     // validating using a custom schema
-    app.validate({ enum: [ 'dog', 'cat' ] }, pet.species)
+    validate({ enum: [ 'dog', 'cat' ] }, pet.species)
 
     return pet
   },

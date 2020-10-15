@@ -1,6 +1,6 @@
 {
   "name": "@dkh-dev/app",
-  "version": "4.8.0",
+  "version": "4.8.1",
   "description": "Simple server app",
   "main": "index.js",
   "bin": {
@@ -21,6 +21,7 @@
     "js-yaml": "^3.14.0"
   },
   "peerDependencies": {
+    "ajv": "^7.0.0-beta.1",
     "express-session": "^1.17.1",
     "mongodb": "^3.6.2"
   },

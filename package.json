@@ -1,6 +1,6 @@
 {
   "name": "@dkh-dev/app",
-  "version": "4.7.1",
+  "version": "4.8.0",
   "description": "Simple server app",
   "main": "index.js",
   "bin": {
@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@dkh-dev/eslint-config": "^1.6.2",
+    "ajv": "^7.0.0-beta.1",
     "axios": "^0.20.0",
     "express-session": "^1.17.1",
     "mongodb": "^3.6.2",

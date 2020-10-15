@@ -62,6 +62,9 @@ database:
 
     ignore_undefined: <bool> [true]
 
+validator:
+  strict: <bool> [true]
+
 key:
     size: <int> [64] // must be equal or greater than id size
     encoding: <String> [base64]

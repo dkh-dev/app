@@ -62,6 +62,39 @@ app.session([
   '/session',
 ])
 
+app.validate({
+  // provide a schema for validation
+  '/validator/user': {
+    // req.body
+    body: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        age: { type: 'number' },
+      },
+      required: [ 'name', 'age' ],
+      additionalProperties: false,
+    },
+  },
+
+  // or define definition schemas and reference them in validation schemas
+
+  // def schema
+  contact: {
+    type: 'object',
+    properties: {
+      id: { type: 'number' },
+      email: { type: 'string' },
+    },
+    required: [ 'id', 'email' ],
+    additionalProperties: false,
+  },
+  // validation schema
+  '/validator/contact': {
+    body: { $ref: 'contact' },
+  },
+})
+
 app.get({
   '/': () => ({ success: true }),
 
@@ -177,6 +210,8 @@ app.post({
     await db.stories.deleteMany({ createdAt: { $lt: Date.now() - 86400000 } })
     await db.stories.insertOne({ ...body, createdAt: Date.now() })
   },
+
+  '/validator/:any': ({ body }) => body,
 })
 
 if (argv.auto) {

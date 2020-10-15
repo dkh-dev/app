@@ -27,6 +27,9 @@ database:
 
   # ignore_undefined: true
 
+# validator:
+  # strict: true
+
 # key:
   # size: 64
   # encoding: base64

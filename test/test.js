@@ -172,6 +172,24 @@ const main = app => {
     )
   })
 
+  test('Validator', async t => {
+    await t.request(
+      { endpoint: '/validator/user', data: { name: 'hi', age: 10 } },
+      { data: { name: 'hi', age: 10 }, status: 200 },
+      'valid user',
+    )
+    await t.request(
+      { endpoint: '/validator/user', data: { name: 'hi', age: 'invalid age' } },
+      { status: 400, stderr: 'Error: data/body/age should be number' },
+      'invalid user',
+    )
+    await t.request(
+      { endpoint: '/validator/contact', data: { id: 0 } },
+      { status: 400, stderr: `Error: data/body should have required property 'email'` },
+      'invalid contact, validated using $ref',
+    )
+  })
+
   test('Authentication key', async t => {
     await t.request(
       '/delete-keys-from-database',

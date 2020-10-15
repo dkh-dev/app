@@ -12,6 +12,7 @@ const Sessions = require('./lib/sessions')
 const Middlewares = require('./lib/middlewares')
 const Router = require('./lib/router')
 const Assets = require('./lib/assets')
+const Validator = require('./lib/validator')
 
 
 class App {
@@ -61,6 +62,32 @@ class App {
     return this
   }
 
+  /**
+   * Validates `req` properties or defines schemas.
+   * @param {object} schemas
+   */
+  validate(schemas) {
+    const entries = Object.entries(schemas)
+    // only keys starting with '/' are paths
+    // others are definition schemas
+    const definitions = entries.filter(([ key ]) => !key.startsWith('/'))
+    const routes = entries.filter(([ key ]) => key.startsWith('/'))
+
+    definitions.forEach(([ key, schema ]) => {
+      this.validator.add({ $id: key, ...schema })
+    })
+
+    routes.forEach(([ key, properties ]) => {
+      const schema = {
+        properties,
+        type: 'object',
+        required: Object.keys(properties),
+      }
+
+      this.validator.register(key, schema)
+    })
+  }
+
   get(routes) {
     this.settings.routes.get = routes
 
@@ -89,6 +116,7 @@ class App {
     this.logger = new Logger(config.logger)
     this.db = new Db(config.database)
     this.key = new Key(this)
+    this.validator = new Validator(this)
 
     this.express = express()
 

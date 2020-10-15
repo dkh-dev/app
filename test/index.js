@@ -62,7 +62,7 @@ app.session([
   '/session',
 ])
 
-app.validate({
+app.schemas({
   // provide a schema for validation
   '/validator/user': {
     // req.body
@@ -92,6 +92,18 @@ app.validate({
   // validation schema
   '/validator/contact': {
     body: { $ref: 'contact' },
+  },
+
+  // or just define definition schemas and validate data anywhere
+  //   other than inside middlewares
+  pet: {
+    type: 'object',
+    properties: {
+      species: { type: 'string' },
+      name: { type: 'string' },
+    },
+    required: [ 'species', 'name' ],
+    additionalProperties: false,
   },
 })
 
@@ -211,6 +223,14 @@ app.post({
     await db.stories.insertOne({ ...body, createdAt: Date.now() })
   },
 
+  '/validator/pet': ({ body: pet }) => {
+    // validating using a predefined schema
+    app.validate('pet', pet)
+    // validating using a custom schema
+    app.validate({ enum: [ 'dog', 'cat' ] }, pet.species)
+
+    return pet
+  },
   '/validator/:any': ({ body }) => body,
 })
 

@@ -62,11 +62,15 @@ class App {
     return this
   }
 
+  validate(schema, data) {
+    return this.validator.validate(schema, data)
+  }
+
   /**
-   * Validates `req` properties or defines schemas.
+   * Defines definition schemas and registers middleware validators.
    * @param {object} schemas
    */
-  validate(schemas) {
+  schemas(schemas) {
     const entries = Object.entries(schemas)
     // only keys starting with '/' are paths
     // others are definition schemas

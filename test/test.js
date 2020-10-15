@@ -188,6 +188,11 @@ const main = app => {
       { status: 400, stderr: `Error: data/body should have required property 'email'` },
       'invalid contact, validated using $ref',
     )
+    await t.request(
+      { endpoint: '/validator/pet', data: { species: 'pig', name: 'hi' } },
+      { status: 400, stderr: `Error: data should be equal to one of the allowed values` },
+      `should pass middleware validator but not handler's own validator`,
+    )
   })
 
   test('Authentication key', async t => {

@@ -26,24 +26,20 @@ app.start()
 
 > Note: The default app is shipped with default configurations to make it work out of the box.
 
-`.config.yaml`
+`app.yaml`
 
 ```dart
 server:
     port: <int> [8080]
 
-    ssl_port: <int> [4343]
-    ssl_certificate: <String> // ssl certificate file path
-    ssl_certificate_key: <String> // ssl certificate key file path
-
-    post_max_size: <int> [1000]
-
-    keep_alive_timeout: <int> [5000] // a value of 0 will disable keep-alive
+    keep_alive_timeout: <int> [5000]
+    max_body_size: <int> [1000]
 
 logger:
-    info: <String> [data/info.log] // info log file path
-    error: <String> [data/error.log] // error log file path
-    <name>: <String> // logger.<name>() file path
+    info: <String> [production ? data/info.log : stdout] // info log
+    error: <String> [production ? data/error.log : stderr] // error log
+    debug: <String> [production ? null : stdout] // debug log
+    <name>: <String> // logger.<name>()
     // request: data/request.log
     // database: data/database.log
 
@@ -55,143 +51,150 @@ database:
 
     user: <String>
     password: <String>
-    authentication_database: <String> [database.name]
 
     pool_size: <int> [1]
-    min_size: <int>
-
     ignore_undefined: <bool> [true]
 
 validator:
-  strict: <bool> [true]
+    strict: <bool> [true]
+    remove_additional: <bool> [true]
 
 key:
     size: <int> [64] // must be equal or greater than id size
     encoding: <String> [base64]
-
-session:
-    secret: <String>
-
-    resave: <bool> [false]
-    save_uninitialized: <bool> [false]
-
-    cookie:
-        secure: <bool> [is_production ? true : false]
-        signed: true
-        path: <String> [/]
-        http_only: <bool> [true]
-        same_site: <String> [strict]
+    collection_name: <String> [keys]
 ```
 
 ### App
 
-- `app.db: <Db>` — a `Db` instance
+- `app.db: <Db>`
+
     ```typescript
     class Db {
-        // Promise<void> connect() // connects to MongoDB
+      Promise<void> connect() // connects to MongoDB
 
-        Collection get <collection>() // returns MongoDB Collection
-        // db.users.find()
-        // db.products.insertOne()
+      Collection get <collection>() // returns a MongoDB Collection
+      // db.users.find()
+      // db.products.insertOne()
 
-        // void close() // closes the database client
+      void close() // closes the database client
     }
     ```
 
-- `app.logger: <Logger>` — a `Logger` instance
+- `app.logger: <Logger>`
+
     ```typescript
     class Logger {
-        void info() // logs to info log file in production environment
-                    //   or to console in development environment
+      void info() // logs to info log file in production environment
+                  //   or to console in development environment
 
-        void error()
+      void error()
 
-        void debug() // logs to console in development enviroment;
-                     //   does nothing in production environment
+      void debug() // logs to console in development enviroment;
+                    //   does nothing in production environment
 
-        void <name>() // user-defined log stream
-        // logger.request(`requesting ${ url }`)
-        // logger.database(`querying ${ collection }`)
+      void <name>() // user-defined log stream
+      // logger.request(`requesting ${ url }`)
+      // logger.database(`querying ${ collection }`)
     }
     ```
 
 - `app.lock()` — locks paths; requires `authorization: <key>` to unlock
+
     ```javascript
-    // this works only if config.key is set
-    // otherwise, locked paths are always open
     app.lock([
-        '/unlock-me',
-        '/unlock-me-too',
+      '/admin',
     ])
     ```
 
 - `app.use()` — applies middlewares
+
     ```javascript
     app.use({
-        '/*': logThisRequest,
+      '/': log,
 
-        // middlewares are fail-safe
-        // feel free to throw an error from inside
-        '/should-fail': () => {
-            throw Error('user wants me to fail')
-        },
+      // middlewares are fail-safe
+      // feel free to throw an error from inside
+      '/error': () => {
+        throw Error('user wants me to fail')
+      },
     })
     ```
 
-- `app.sessions()` — enables sessions for paths
+- `app.schema` — defines schemas or registers validator middlewares
+
     ```javascript
-    app.sessions([
-        '/login',
-        '/home',
-        '/app',
-    ])
+    app.schema({
+      // definition schemas
+
+      story: {
+        definitions: {
+          id: { type: 'string', maxLength: 20 },
+          contents: { type: 'string', maxLength: 1000 },
+        },
+      },
+
+      // validator middlewares
+      // keys starting with '/' are paths
+
+      '/duplicate': {
+        type: 'array',
+        items: { type: 'integer' },
+      },
+
+      '/stories/create': {
+        type: 'object',
+        properties: {
+          contents: { $ref: 'story#/definitions/contents' },
+        },
+        additionalProperties: false,
+      },
+    })
     ```
 
 - `app.get()` — registers `GET` handlers
+
     ```javascript
     app.get({
-        '/': homePage,
+      '/': home,
 
-        // there's no need to use res.send() explicitly
-        //   as the return value will be used as the response
-        '/random-number': () => Math.random(),
-        // even async values work
-        '/greet-async': () => Promise.resolve('hello'),
-        // and so do streams
-        '/data': () => fs.createReadStream('data.txt'),
+      // the return value will be used as the response
+      '/random': () => Math.random(),
 
-        // still you can send response explicitly
-        '/send-explicitly': (_, res) => {
-            res.send({ explicit: true })
-        },
+      // async values work
+      '/hello': () => Promise.resolve('hello'),
 
-        // handlers are fail-safe
-        // feel free to throw an error from inside
-        '/gimme-an-error': () => {
-            throw Error('user has requested an error')
-        },
+      // and so do streams
+      '/data': () => fs.createReadStream('data.txt'),
+
+      // still you can send response explicitly
+      '/write': (request, response) => {
+        response.write('text')
+      },
+
+      // handlers are fail-safe
+      // feel free to throw an error from inside
+      '/error': () => {
+        throw Error('user has requested an error')
+      },
     })
     ```
 
 - `app.post()` — registers `POST` handlers
-    ```javascript
-    const HttpError = require('@dkh-dev/app/lib/http-error')
 
-    // ...
+    ```javascript
+    const { HttpError } = require('@dkh-dev/app')
 
     app.post({
-        '/unlock-me': () => ({
-            unlocked: true,
-            message: 'your authentication key works',
-        }),
+      '/unlock': () => true,
 
-        // what you post is what you get
-        '/copy' ({ body }) => body,
+      // what you post is what you get
+      '/duplicate' ({ body }) => duplicate(body),
 
-        // handlers are fail-safe
-        '/gimme-an-error/specific-code': ({ body: { code } }) => {
-            throw new HttpError(code, `${ code } error`)
-        }
+      // handlers are fail-safe
+      '/error': ({ body: { code } }) => {
+        throw new HttpError(code, `http error`)
+      }
     })
     ```
 
@@ -199,11 +202,7 @@ session:
 
 - `npx keygen` — generates a key to unlock locked paths
 
-## Changelog
-
-### 4.1.0
-
-Additions:
-
-- Configuration: `config.db.ignore_undefined = true`
-- Authentication key comment: `keygen` with argument `-m` or `--comment`
+    ```bash
+    $ npx keygen --scope '/root /admin' --comment 'root'
+    $ npx keygen -s /admin -m admin
+    ```

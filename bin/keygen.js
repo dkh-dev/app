@@ -7,47 +7,30 @@ const argv = require('@dkh-dev/argv')
 const App = require('..')
 
 
-/**
- * Generate key only.
- * The generated key will not be stored.
- */
-const dryRun = argv.n || argv[ 'dry-run' ]
-/**
- * Granted scope.
- */
-const scope = argv.s || argv.scope || ''
-const comment = argv.m || argv.comment
-
-
 const { db, key } = new App()
 
-const generateOnly = async () => {
-  const { string } = await key.generateOnly()
+const gen = async () => {
+  const s = argv.s || argv.scopes || ''
+  const comment = argv.m || argv.comment
 
-  console.log(string)
-}
-
-const generate = async () => {
-  const scopes = scope.split(/[\s,]/).filter(Boolean)
+  const scopes = s.split(/[\s,]/).filter(Boolean)
 
   if (scopes.length === 0) {
-    throw Error('missing parameter -scope or -s')
+    throw Error('missing parameter --scopes or -s')
   }
 
-  await db.connect()
+  const k = await key.generate(scopes, { comment })
 
-  const string = await key.generate({
-    scopes,
-    comment,
-  })
-
-  console.log(string)
-
-  await db.close()
+  console.log(k)
 }
 
-if (dryRun) {
-  generateOnly()
-} else {
-  generate()
+const main = async () => {
+  try {
+    await db.connect()
+    await gen()
+  } finally {
+    db.close()
+  }
 }
+
+main()

@@ -1,13 +1,12 @@
 {
   "extends": "@dkh-dev/eslint-config",
   "rules": {
-    "camelcase": "off",
     "global-require": "off",
     "max-params": [
       "error",
       4
     ],
-    "no-process-env": "off",
+    "max-statements": "off",
     "no-prototype-builtins": "off"
   }
 }

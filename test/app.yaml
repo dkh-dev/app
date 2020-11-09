@@ -1,0 +1,39 @@
+server:
+  port: 8080
+
+  keep_alive_timeout: 5 # 5000
+
+  max_body_size: 100 # 1000
+
+# logger:
+#   info: data/info.log
+#   error: data/error.log
+#   debug: stdout
+
+database:
+  # hostname: localhost
+  # port: 27017
+
+  name: test
+
+  user: user
+  password: abc123
+  # authentication_database: test
+
+  pool_size: 1 # 1
+
+  # ignore_undefined: true
+
+# validator:
+  # strict: true
+
+# key:
+  # size: 64
+  # encoding: base64
+
+  # collection_name: keys
+
+### project-specific configurations
+
+application:
+  name: value

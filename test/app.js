@@ -143,6 +143,8 @@ app.get({
       })
   ),
 
+  '/ips': ({ ips, ip }) => ({ ips, ip }),
+
   '/stdio': () => stdio,
 
   '/shutdown': () => void app.close(),

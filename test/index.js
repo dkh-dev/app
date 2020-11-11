@@ -12,6 +12,7 @@ helper(test)
 
 require('./unit/define-lazy-property')
 require('./unit/matcher')
+require('./unit/ips')
 require('./unit/config')
 require('./unit/key')
 
